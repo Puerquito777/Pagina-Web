@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Outbreak Report — Demo</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Variables --- */
+        :root {
+            --bg: #0b0b0c;
+            --panel: #0f1112;
+            --muted: #bdb6ac;
+            --accent: #b83a2f; /* rojo ocre */
+            --accent-2: #a8472b;
+            --glass: rgba(255,255,255,0.03);
+            --card-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            --max-width: 1100px;
+            --text-small: 13px;
+            --base-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            --title-font: "Oswald", var(--base-font);
+        }
+
+        /* --- Reset --- */
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(ellipse at 20% 10%, rgba(168,70,43,0.06), transparent 8%), linear-gradient(180deg,#050506 0%, #0b0b0c 60%);
+            color: #e6e1dd;
+            font-family: var(--base-font);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.45;
+            overflow-y: scroll;
+            font-size: 15px;
+            padding-top: 70px;
+        }
+
+        /* background layers (kept) */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none
+        }
+
+        .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(168,70,43,0.04), rgba(0,0,0,0.6));
+            mix-blend-mode: overlay
+        }
+
+        .bg-fog {
+            position: absolute;
+            inset: 0;
+            opacity: 0.18
+        }
+
+        .fog-blob {
+            position: absolute;
+            left: 10%;
+            top: 20%;
+            width: 420px;
+            height: 300px;
+            background: radial-gradient(circle,#3b1f12 0%, transparent 60%);
+            filter: blur(52px)
+        }
+
+            .fog-blob.b2 {
+                left: auto;
+                right: 8%;
+                top: 60%;
+                width: 340px;
+                height: 260px;
+                opacity: 0.9
+            }
+
+        canvas#particles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none
+        }
+
+        /* Layout */
+        header {
+            position: relative;
+            z-index: 8;
+            padding: 18px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: var(--max-width);
+            margin: 0 auto
+        }
+
+        .brand {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+
+        .logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            background: linear-gradient(180deg,var(--accent),var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--title-font);
+            font-weight: 700;
+            color: #0b0b0c;
+            box-shadow: 0 6px 18px rgba(168,70,43,0.18)
+        }
+
+        header h1 {
+            margin: 0;
+            font-family: var(--title-font);
+            font-size: 20px;
+            letter-spacing: 1px
+        }
+
+        header .subtitle {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: var(--max-width);
+            margin: 18px auto;
+            padding: 18px
+        }
+
+        /* Hero */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+            align-items: start;
+            margin-bottom: 22px
+        }
+
+        .hero-left {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            min-height: 360px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.65));
+            box-shadow: var(--card-shadow)
+        }
+
+            .hero-left::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(184,58,47,0.06), transparent 40%);
+                mix-blend-mode: soft-light;
+                pointer-events: none
+            }
+
+        /* hero image + fade */
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transform-origin: center;
+            transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s ease-in-out;
+            opacity: 1
+        }
+
+            .hero-img.fade-out {
+                opacity: 0
+            }
+
+        /* pequeño canvas interno para polvo (solo dentro del hero) */
+        canvas#heroDust {
+            position: absolute;
+            inset: 0;
+            z-index: 6;
+            pointer-events: none
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 7
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 1px
+        }
+
+        /* glitch title */
+        .hero-title {
+            font-family: var(--title-font);
+            font-size: 34px;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 4px 18px rgba(0,0,0,0.7);
+            position: relative
+        }
+
+            .hero-title[data-text]::after {
+                content: attr(data-text);
+                position: absolute;
+                left: 2px;
+                top: 0;
+                color: var(--accent);
+                opacity: 0.18;
+                clip-path: inset(0 0 60% 0);
+                transform: translateX(0);
+                animation: glitch 3s infinite linear
+            }
+
+        @keyframes glitch {
+            0% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-2px)
+            }
+
+            40% {
+                transform: translateX(1px)
+            }
+
+            60% {
+                transform: translateX(-1px)
+            }
+
+            80% {
+                transform: translateX(0.5px)
+            }
+
+            100% {
+                transform: translateX(0)
+            }
+        }
+
+        .hero-blurb {
+            margin: 0;
+            color: var(--muted);
+            max-width: 60%;
+            font-size: 14px
+        }
+
+        /* Right panel widgets */
+        .panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px
+        }
+
+        .widget h3 {
+            margin: 0;
+            font-size: 14px;
+            font-family: var(--title-font);
+            letter-spacing: 0.8px
+        }
+
+        .small {
+            font-size: var(--text-small);
+            color: var(--muted)
+        }
+
+        /* button shimmer */
+        .btn {
+            appearance: none;
+            border: 0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: linear-gradient(180deg,#c24b3a,#a6372b);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(168,70,43,0.18);
+            position: relative;
+            overflow: hidden
+        }
+
+            .btn::after {
+                content: '';
+                position: absolute;
+                left: -40%;
+                top: -30%;
+                width: 120%;
+                height: 160%;
+                background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+                transform: translateX(-100%);
+                transition: transform .9s cubic-bezier(.2,.9,.2,1)
+            }
+
+            .btn:hover::after {
+                transform: translateX(100%)
+            }
+
+            .btn.secondary {
+                background: transparent;
+                border: 1px solid rgba(255,255,255,0.06);
+                color: #fff
+            }
+
+            .btn:focus {
+                outline: 3px solid rgba(184,58,47,0.18);
+                outline-offset: 3px
+            }
+
+        /* Sections */
+        section {
+            margin-top: 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+            padding: 16px;
+            border-radius: 10px
+        }
+
+        .section-title {
+            margin: 0 0 8px 0;
+            font-family: var(--title-font);
+            font-size: 16px
+        }
+
+        section p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        ul {
+            margin: 8px 0 0 18px;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        /* Documents grid */
+        .docs {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 12px;
+            margin-top: 10px
+        }
+
+        .doc {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(184,58,47,0.22)
+        }
+
+            .doc h4 {
+                margin: 0 0 8px 0;
+                font-size: 14px
+            }
+
+            .doc .content {
+                font-size: 13px;
+                color: var(--muted);
+                max-height: 76px;
+                overflow: hidden;
+                position: relative;
+                padding-right: 6px
+            }
+
+                .doc .content.revealed {
+                    max-height: none
+                }
+
+            .doc .read-toggle {
+                display: inline-block;
+                margin-top: 8px;
+                background: transparent;
+                border: 0;
+                color: var(--accent);
+                font-weight: 600;
+                cursor: pointer;
+                padding: 6px 0;
+                font-size: 13px
+            }
+
+        /* Controls / footer */
+        footer {
+            padding: 18px 12px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            margin-top: 18px
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        /* Responsive */
+        @media (max-width:980px) {
+            .hero {
+                grid-template-columns: 1fr 300px
+            }
+
+            .docs {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+            .hero-title {
+                font-size: 28px
+            }
+        }
+
+        @media (max-width:720px) {
+            header, main {
+                padding-left: 12px;
+                padding-right: 12px
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 12px
+            }
+
+            .hero-blurb {
+                max-width: 100%
+            }
+
+            .docs {
+                grid-template-columns: 1fr
+            }
+
+            .panel {
+                order: 2
+            }
+
+            .hero-left {
+                min-height: 260px
+            }
+
+            canvas#heroDust {
+                display: none
+            }
+            /* disable hero dust on small devices for perf */
+        }
+
+        /* small helpers */
+        .muted {
+            color: var(--muted)
+        }
+
+        .spaced {
+            letter-spacing: 0.6px
+        }
+
+        .sr-only {
+            position: absolute;
+            left: -9999px
+        }
+
+        /* lore fade */
+        #loreFull {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity .4s ease, max-height .4s ease
+        }
+
+            #loreFull.visible {
+                opacity: 1;
+                max-height: 400px
+            }
+
+        /* modal trailer */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.6);
+            z-index: 50
+        }
+
+            .modal.open {
+                display: flex
+            }
+
+            .modal .modal-inner {
+                width: min(960px, 95%);
+                aspect-ratio: 16/9;
+                background: #000;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.7)
+            }
+
+            .modal .close {
+                position: absolute;
+                right: 18px;
+                top: 18px;
+                background: rgba(255,255,255,0.06);
+                border-radius: 6px;
+                padding: 6px 8px;
+                cursor: pointer
+            }
+
+        /* NAVBAR */
+        .navbar {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 18px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid #aa000040;
+            z-index: 999;
+        }
+
+            .navbar ul {
+                list-style: none;
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                padding: 0;
+                margin: 0;
+            }
+
+            .navbar a {
+                color: #fff;
+                text-decoration: none;
+                font-size: 1.1rem;
+                font-weight: 300;
+                transition: 0.3s ease;
+            }
+
+                .navbar a:hover {
+                    color: #ff4d4d;
+                }
+
+    </style>
+</head>
+<body>
+    <!-- decorative background (kept) -->
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="bg-fog">
+            <div class="fog-blob"></div>
+            <div class="fog-blob b2"></div>
+        </div>
+    </div>
+    <canvas id="particles"></canvas>
+
+    <header>
+        <div class="brand" aria-hidden="false">
+            <div class="logo" aria-hidden="true">
+                <img src="Logo2.png" alt="Outbreak Report Logo" style="height: 60px; width: auto;">
+            </div>            <div>
+                <h1>Outbreak Report</h1>
+                <div class="subtitle">Survival Horror — Unity</div>
+            </div>
+        </div>
+        <div class="subtitle muted">v0.9 · Octubre 2025</div>
+    </header>
+
+    <main>
+        <div class="hero" role="region" aria-label="Presentación del juego">
+            <div class="hero-left" id="heroLeft">
+                <img id="heroImg" class="hero-img" src="1.png" alt="Mansión / ciudad abandonada" aria-hidden="false">
+                <!-- canvas interno para polvo (dentro del hero) -->
+                <canvas id="heroDust"></canvas>
+
+                <div class="hero-overlay">
+                    <div class="eyebrow spaced">MONTERREY — 2022</div>
+                    <h2 class="hero-title" data-text="La ciudad que olvidó respirar">La ciudad que olvidó respirar</h2>
+                    <p class="hero-blurb">Una investigación que se vuelve supervivencia. Explora, documenta y decide.</p>
+                </div>
+            </div>
+
+            <aside class="panel" aria-label="Controles y descargas">
+                <div class="widget">
+                    <h3>Jugabilidad</h3>
+                    <div class="small" style="margin-top:8px">Tercera persona · Enfoque en exploración, puzzles y tensión.</div>
+                </div>
+
+                <div class="widget">
+                    <h3>Builds</h3>
+                    <div class="small">Demo WebGL · Windows · APK (próx.)</div>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+                        <button class="btn" id="playDemo">Jugar Demo</button>
+                        <button class="btn secondary" id="downloadWin">Descarga (Windows)</button>
+                        <button class="btn secondary" id="watchTrailer" title="Abrirá el trailer">Trailer</button>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h3>Audio ambiental</h3>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+                        <button class="btn secondary" id="toggleSound" aria-pressed="false">Activar sonido</button>
+                        <div class="small">Ambiente: viento, estática y distorsión sutil.</div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h3>Controles</h3>
+                    <div class="small">PC: WASD · Mouse · Click interactuar · Auriculares recomendados</div>
+                </div>
+
+                <!-- NUEVA SECCIÓN DE ESPECIFICACIONES -->
+                <div class="widget">
+                    <h3>Especificaciones del juego</h3>
+                    <ul class="small" style="margin-top:8px; padding-left:16px;">
+                        <li>Estilo: Survival horror clásico · Inspirado en Resident Evil PS1</li>
+                        <li>Gráficos: Poligonales con textura retro</li>
+                        <li>Cámara: Fija / Semi-móvil</li>
+                        <li>Enfoque: Exploración, puzzles, recolección de recursos y decisiones</li>
+                        <li>Duración demo: 15-30 minutos</li>
+                        <li>Requisitos mínimos: Navegador Web moderno o PC básico</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Shortened, with read-more -->
+        <section aria-labelledby="loreTitle">
+            <h2 id="loreTitle" class="section-title">Lore</h2>
+            <p id="loreShort">
+                Una periodista y su camarógrafo investigan una extraña crisis sanitaria en Monterrey. Lo que inició como simples malestares estomacales se convirtió en un brote violento: personas actuando de forma agresiva, irracional y casi inhumana. Al seguir las pistas, descubren que el origen no fue natural, sino parte de un acto político que contaminó el suministro de agua con un virus para manipular votos. En la demo, llegas a un hospital aislado en lo alto de una montaña, buscando respuestas y documentos clave, mientras tu camarógrafo lucha por sobrevivir en la camioneta. Tu misión: descubrir la verdad… antes de que el brote te alcance.
+            </p>
+            <p id="loreFull" class="muted" style="margin-top:8px">
+                La trama explora corrupción, manipulación y consecuencias. Casos iniciales fueron confusión y convulsiones; más tarde, agresión y pérdida de sensibilidad. La protagonista documenta y decide entre escapar o revelar la verdad.
+            </p>
+            <div style="margin-top:8px">
+                <button class="read-toggle btn secondary" data-target="">Leer más</button>
+            </div>
+        </section>
+
+        <section aria-labelledby="techTitle">
+            <h2 id="techTitle" class="section-title">Cómo lo hacemos</h2>
+            <ul>
+                <li>IA con patrullas y estados de alerta.</li>
+                <li>Inventario y puzzles integrados al entorno.</li>
+                <li>Encuentros diseñados para inmersión (sonido y cámara).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        © 2025 Outbreak Report Dev Team — Monterrey, México · v0.9
+    </footer>
+
+    <audio id="ambientAudio" loop src="" preload="auto" aria-hidden="false"></audio>
+
+    <!-- Trailer modal -->
+    <div id="trailerModal" class="modal" role="dialog" aria-modal="true" aria-label="Trailer">
+        <div class="modal-inner">
+            <button class="close" id="closeTrailer">✕</button>
+            <iframe id="trailerFrame" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen title="Trailer"></iframe>
+        </div>
+    </div>
+
+    <script>
+        /* -----------------------
+           Partículas (ceniza / fuego tenue) - fondo
+           ----------------------- */
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+        function resizeCanvas() {
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+            canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        const particles = [];
+        function spawnParticle(x, y, rad, hue) {
+            particles.push({
+                x: x !== undefined ? x : Math.random() * W,
+                y: y !== undefined ? y : H + 40,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: - (0.3 + Math.random() * 0.9),
+                life: 90 + Math.random() * 220,
+                size: (rad || 1) + Math.random() * 3,
+                alpha: 0.08 + Math.random() * 0.16,
+                hue: hue || (20 + Math.random() * 20)
+            });
+        }
+
+        const ambientSpawn = setInterval(() => {
+            for (let i = 0; i < 2; i++) spawnParticle(undefined, undefined, Math.random() * 2 + 0.6);
+        }, 450);
+
+        function drawLoop() {
+            ctx.clearRect(0, 0, W, H);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life--;
+                p.alpha *= 0.997;
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${200},${60 + Math.floor(p.hue)},${40},${p.alpha})`;
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                if (p.life <= 0 || p.y < -60 || p.alpha < 0.01) particles.splice(i, 1);
+            }
+            requestAnimationFrame(drawLoop);
+        }
+        drawLoop();
+
+        addEventListener('mousemove', (e) => { for (let i = 0; i < 1; i++) spawnParticle(e.clientX + (Math.random() - 0.5) * 20, e.clientY + (Math.random() - 0.5) * 20, Math.random() * 2 + 0.6) });
+        addEventListener('click', (e) => { for (let i = 0; i < 10; i++) spawnParticle(e.clientX + (Math.random() - 0.5) * 50, e.clientY + (Math.random() - 0.5) * 50, Math.random() * 4 + 1) });
+
+
+        /* -----------------------
+           Hero dust (canvas confined to hero)
+           ----------------------- */
+        (function setupHeroDust() {
+            const hero = document.getElementById('heroLeft');
+            const dust = document.getElementById('heroDust');
+            if (!hero || !dust) return;
+            const ctxD = dust.getContext('2d');
+            let w = 0, h = 0, dp = Math.min(devicePixelRatio || 1, 2);
+            function resize() {
+                const r = hero.getBoundingClientRect();
+                w = Math.floor(r.width); h = Math.floor(r.height);
+                dust.width = Math.floor(w * dp); dust.height = Math.floor(h * dp);
+                dust.style.width = w + 'px'; dust.style.height = h + 'px';
+                ctxD.setTransform(dp, 0, 0, dp, 0, 0);
+            }
+            function rand() { return Math.random(); }
+            const dustParticles = [];
+            function spawn(x, y, size, alpha) {
+                dustParticles.push({ x: x || (rand() * w), y: y || (rand() * h), vx: (rand() - 0.5) * 0.15, vy: (-0.05 - rand() * 0.15), life: 80 + rand() * 200, size: size || (1 + rand() * 2), alpha: alpha || (0.03 + rand() * 0.12) });
+            }
+            function loop() {
+                ctxD.clearRect(0, 0, w, h);
+                for (let i = dustParticles.length - 1; i >= 0; i--) {
+                    const p = dustParticles[i];
+                    p.x += p.vx; p.y += p.vy; p.life--; p.alpha *= 0.998;
+                    ctxD.beginPath();
+                    ctxD.fillStyle = `rgba(230,220,200,${p.alpha})`;
+                    ctxD.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctxD.fill();
+                    if (p.life <= 0 || p.y < -30 || p.alpha < 0.01) dustParticles.splice(i, 1);
+                }
+                // ambient spawn
+                if (dustParticles.length < 50 && Math.random() < 0.4) spawn();
+                requestAnimationFrame(loop);
+            }
+            resize(); loop();
+            addEventListener('resize', resize);
+            // spawn on mouse inside hero
+            hero.addEventListener('mousemove', (e) => {
+                const rect = hero.getBoundingClientRect();
+                spawn(e.clientX - rect.left + (Math.random() - 0.5) * 30, e.clientY - rect.top + (Math.random() - 0.5) * 30, 1 + Math.random() * 2, 0.06 + Math.random() * 0.12);
+            });
+        })();
+
+        /* -----------------------
+           Parallax hero (smooth) + image rotation with fade
+           ----------------------- */
+        const heroImg = document.getElementById('heroImg');
+        const heroLeft = document.getElementById('heroLeft');
+
+        const heroImages = ["1.png", "2.png", "3.png", "4.png"];
+        let currentHeroIndex = 0;
+
+        // smooth mouse parallax using lerp
+        let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+        heroLeft.addEventListener('mousemove', (e) => {
+            const rect = heroLeft.getBoundingClientRect();
+            const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
+            const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
+            targetX = dx * 10; targetY = dy * 10;
+        });
+        heroLeft.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
+        function rafParallax() { currentX += (targetX - currentX) * 0.09; currentY += (targetY - currentY) * 0.09; heroImg.style.transform = `translate(${currentX}px, ${currentY}px) scale(${1 + Math.abs(currentX) / 300})`; requestAnimationFrame(rafParallax); }
+        rafParallax();
+
+        // rotation with fade
+        function rotateHero() {
+            heroImg.classList.add('fade-out');
+            setTimeout(() => {
+                currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
+                heroImg.src = heroImages[currentHeroIndex];
+                heroImg.classList.remove('fade-out');
+            }, 480);
+        }
+        const heroRotateInterval = setInterval(rotateHero, 4500);
+
+        /* -----------------------
+           Typewriter reveal
+           ----------------------- */
+        function typeReveal(el, speed = 16) {
+            if (el.dataset.revealed) return;
+            el.dataset.revealed = '1';
+            const text = el.getAttribute('data-text') || el.textContent || '';
+            el.style.opacity = 1; el.style.whiteSpace = 'pre-wrap'; el.innerText = '';
+            let i = 0; const t = setInterval(() => { el.innerText += text[i++] || ''; if (i >= text.length) { clearInterval(t); el.classList.add('revealed'); } }, speed);
+        }
+
+        function onScrollReveal() {
+            const els = document.querySelectorAll('.doc .content, .hero-left .content');
+            const vh = innerHeight;
+            els.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < vh - 80) typeReveal(el, 14); });
+        }
+        addEventListener('scroll', onScrollReveal);
+        addEventListener('load', onScrollReveal);
+        onScrollReveal();
+
+        /* -----------------------
+           Read-more toggles (docs + lore with fade)
+           ----------------------- */
+        document.querySelectorAll('.read-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = btn.dataset.target;
+                if (!targetId) {
+                    const loreFull = document.getElementById('loreFull');
+                    const open = loreFull.classList.contains('visible');
+                    loreFull.classList.toggle('visible');
+                    btn.innerText = open ? 'Leer más' : 'Leer menos';
+                    return;
+                }
+                const parent = btn.closest('.doc');
+                const content = parent.querySelector('.content');
+                if (content.classList.contains('revealed')) {
+                    content.classList.remove('revealed'); content.style.maxHeight = '76px'; btn.innerText = 'Leer';
+                } else {
+                    content.classList.add('revealed'); content.style.maxHeight = 'none'; if (!content.dataset.revealed) { content.innerText = content.getAttribute('data-text'); content.dataset.revealed = '1'; } btn.innerText = 'Cerrar';
+                }
+            });
+        });
+
+        /* -----------------------
+           Sound toggle
+           ----------------------- */
+        const ambient = document.getElementById('ambientAudio');
+        ambient.src = 'data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAA==';
+        let soundOn = false;
+        const toggleBtn = document.getElementById('toggleSound');
+        toggleBtn.addEventListener('click', async () => {
+            try {
+                if (!soundOn) {
+                    ambient.src = 'Musica_de_ambiente.mp3';
+                    await ambient.play();
+                    toggleBtn.textContent = 'Sonido activado';
+                    toggleBtn.setAttribute('aria-pressed', 'true');
+                } else {
+                    ambient.pause();
+                    toggleBtn.textContent = 'Activar sonido';
+                    toggleBtn.setAttribute('aria-pressed', 'false');
+                }
+            } catch (e) { /* ignore autoplay block */ }
+            soundOn = !soundOn;
+        });
+
+        /* -----------------------
+           CTA placeholders
+           ----------------------- */
+        document.getElementById('playDemo').addEventListener('click', () => { alert('Demo WebGL próximamente.'); });
+        document.getElementById('downloadWin').addEventListener('click', () => { alert('Descarga para Windows próximamente.'); });
+
+        /* -----------------------
+           Trailer modal
+           ----------------------- */
+        const watchBtn = document.getElementById('watchTrailer');
+        const modal = document.getElementById('trailerModal');
+        const closeModal = document.getElementById('closeTrailer');
+        const frame = document.getElementById('trailerFrame');
+        watchBtn.addEventListener('click', () => {
+            // reemplaza la siguiente URL por tu trailer real (YouTube / Vimeo)
+            frame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0';
+            modal.classList.add('open');
+            // pausar ambient si está sonando
+            if (soundOn) { ambient.pause(); }
+        });
+        closeModal.addEventListener('click', () => { modal.classList.remove('open'); frame.src = ''; if (soundOn) ambient.play().catch(() => { }); });
+        modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.remove('open'); frame.src = ''; if (soundOn) ambient.play().catch(() => { }); } });
+
+        /* -----------------------
+           Accessibility (key: d)
+           ----------------------- */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'd') {
+                document.querySelectorAll('.doc .content').forEach(el => { if (!el.dataset.revealed) el.innerText = el.getAttribute('data-text'); el.classList.add('revealed'); el.dataset.revealed = '1'; });
+            }
+        });
+
+    </script>
+</body>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <ul>
+        <a href="index.html">Inicio</a>
+        <a href="registros.html">Registros</a>
+        <a href="documentos.html">Documentos</a>
+        <a class="active" href="acerca.html">Acerca</a>
+    </ul>
+</nav>
+
+
+</html>

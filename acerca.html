@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca – Outbreak Report</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            background: #0d0d0d;
+            color: #ddd;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .about-container {
+            max-width: 1100px;
+            margin: 100px auto;
+            padding: 40px;
+            background: #0b0b0b;
+            border-radius: 18px;
+            border: 2px solid #5a0000;
+            box-shadow: 0 0 25px #0006;
+            position: relative;
+        }
+
+        .about-title {
+            text-align: center;
+            font-size: 2.4rem;
+            letter-spacing: 3px;
+            color: #ff4d4d;
+            margin-bottom: 30px;
+            text-shadow: 0 0 12px #ff000055;
+        }
+
+        /* LOGO */
+        .company-logo {
+            width: 180px;
+            height: 180px;
+            background: #111;
+            border: 3px solid #a30000;
+            border-radius: 12px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px #0008;
+        }
+
+            .company-logo img {
+                max-width: 80%;
+                max-height: 80%;
+            }
+
+        /* TEXTO */
+        .about-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e3e3e3;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .highlight {
+            color: #ff4d4d;
+        }
+
+        /* DECORACIÓN */
+        .divider {
+            width: 120px;
+            height: 3px;
+            background: #a30000;
+            margin: 25px auto 25px auto;
+            border-radius: 10px;
+        }
+
+        /* NAV SUPERIOR */
+        .nav {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            padding: 14px 0;
+            border-bottom: 1px solid #a3000040;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        /* LADO IZQUIERDO (titulo/logo) */
+        .nav-left .nav-logo {
+            margin-left: 30px;
+            font-size: 1.4rem;
+            color: #ff4d4d;
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #ff000050;
+            transition: 0.3s ease;
+        }
+
+            .nav-left .nav-logo:hover {
+                color: #ffffff;
+            }
+
+        /* LADO DERECHO (links) */
+        .nav-right {
+            display: flex;
+            gap: 35px;
+            margin-right: 35px;
+        }
+
+            .nav-right a {
+                text-decoration: none;
+                color: #ddd;
+                font-size: 1.05rem;
+                font-weight: 300;
+                letter-spacing: 1px;
+                transition: 0.25s ease;
+                padding-bottom: 3px;
+                border-bottom: 2px solid transparent;
+            }
+
+                .nav-right a:hover {
+                    color: #ff4d4d;
+                    border-bottom: 2px solid #ff4d4d;
+                }
+
+                .nav-right a.active {
+                    color: #ff4d4d;
+                    border-bottom: 2px solid #ff4d4d;
+                }
+
+
+    </style>
+</head>
+
+<body>
+    <nav class="nav">
+        <div class="nav-left">
+            <a href="index.html" class="nav-logo">Outbreak Report</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="index.html">Inicio</a>
+            <a href="registros.html">Registros</a>
+            <a href="documentos.html">Documentos</a>
+            <a class="active" href="acerca.html">Acerca</a>
+        </div>
+    </nav>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="about-container">
+
+        <h2 class="about-title">Acerca de Nosotros</h2>
+
+        <!-- Espacio para el logo -->
+        <div class="company-logo">
+            <!-- Cambia esta ruta por tu logo -->
+            <img src="LogoEmpresa.png" alt="FrozenBottle Games">
+            <!--<span style="font-size:0.9rem; opacity:0.6">LOGO AQUÍ</span>-->
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="about-text">
+            <p>
+                <span class="highlight">FrozenBottle Games</span> es un pequeño estudio indie dedicado a crear experiencias narrativas intensas,
+                atmosféricas y llenas de identidad. Nuestro enfoque está inspirado en los clásicos de horror
+                psicológico y survival de la era del PlayStation 1, donde la tensión, la exploración y el misterio
+                eran los protagonistas.
+            </p>
+
+            <p>
+                Creemos que los juegos pueden ser más que entretenimiento: pueden ser historias vivas, lugares
+                que se sienten reales y momentos que permanecen en la memoria del jugador.
+            </p>
+
+            <p>
+                <span class="highlight">Outbreak Report</span> es un proyecto que combina investigación,
+                narrativa ambiental y supervivencia. El objetivo del estudio es transportar al jugador a un México
+                oscuro, donde la información es tan peligrosa como el enemigo.
+            </p>
+
+            <p>
+                FrozenBottle Games se fundó con la idea de que incluso los equipos pequeños pueden crear mundos
+                grandes. Nuestra misión es construir experiencias que inspiren, intrigan y sorprendan.
+            </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="about-text" style="text-align:center; opacity:0.7; font-size:0.9rem">
+            © 2025 FrozenBottle Games — Proyecto universitario y prototipo interactivo.
+        </div>
+
+    </div>
+
+</body>
+</html>

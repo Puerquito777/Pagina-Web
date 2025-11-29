@@ -1,0 +1,312 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Registros – Outbreak Report</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Estilos básicos -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            background: #0c0c0c;
+            color: #fff;
+            padding-top: 80px; /* espacio para la navbar */
+        }
+
+        /* NAV SUPERIOR */
+        .nav {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            padding: 14px 0;
+            border-bottom: 1px solid #a3000040;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        /* LADO IZQUIERDO (titulo/logo) */
+        .nav-left .nav-logo {
+            margin-left: 30px;
+            font-size: 1.4rem;
+            color: #ff4d4d;
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #ff000050;
+            transition: 0.3s ease;
+        }
+
+            .nav-left .nav-logo:hover {
+                color: #ffffff;
+            }
+
+        /* LADO DERECHO (links) */
+        .nav-right {
+            display: flex;
+            gap: 35px;
+            margin-right: 35px;
+        }
+
+            .nav-right a {
+                text-decoration: none;
+                color: #ddd;
+                font-size: 1.05rem;
+                font-weight: 300;
+                letter-spacing: 1px;
+                transition: 0.25s ease;
+                padding-bottom: 3px;
+                border-bottom: 2px solid transparent;
+            }
+
+                .nav-right a:hover {
+                    color: #ff4d4d;
+                    border-bottom: 2px solid #ff4d4d;
+                }
+
+                .nav-right a.active {
+                    color: #ff4d4d;
+                    border-bottom: 2px solid #ff4d4d;
+                }
+
+
+        /* CONTENIDO */
+        section {
+            width: 90%;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .section-title {
+            font-size: 34px;
+            margin-bottom: 10px;
+            font-family: "Oswald", sans-serif;
+        }
+
+        .muted {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .doc {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+            .doc h4 {
+                margin-top: 0;
+                font-family: "Oswald", sans-serif;
+                font-size: 22px;
+                color: #ffb300;
+            }
+
+        .content {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        /* Espacio para las imágenes */
+        .doc-image {
+            width: 200px;
+            height: 140px;
+            background: #222;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 14px;
+            border: 1px solid #444;
+        }
+
+        footer {
+            padding: 18px 12px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            margin-top: 18px
+        }
+
+
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="nav">
+        <div class="nav-left">
+            <a href="index.html" class="nav-logo">Outbreak Report</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="index.html">Inicio</a>
+            <a href="registros.html" class="active">Registros</a>
+            <a href="documentos.html">Documentos</a>
+            <a href="acerca.html">Acerca</a>
+        </div>
+    </nav>
+
+
+    <!-- CONTENIDO -->
+    <section aria-labelledby="protaTitle">
+        <h2 id="protaTitle" class="section-title">La protagonista</h2>
+        <p class="muted">Una periodista que busca a su amigo. De reportera a superviviente: sus elecciones cambian destinos. Aqui hay algunas anotaciones sobre sus evidencias.</p>
+
+        <!-- REGISTRO 1 -->
+        <div class="doc">
+            <div class="doc-image">
+                <img src="Registro1.png" style="width:100%; height:100%; border-radius:8px;">
+            </div>
+            <div>
+                <h4>Registro: 7 de Junio de 2022</h4>
+                <div class="content" data-text="Nuestro equipo llegó a la zona para grabar testimonios. Todo parecía normal hasta que, durante una entrevista, una persona comenzó a convulsionar y atacó al camarógrafo. Disparamos para salvarlo. Nos refugiamos. Lo que vimos después fue peor."></div>
+            </div>
+        </div>
+
+        <!-- REGISTRO 2 -->
+        <div class="doc">
+            <div class="doc-image">
+                <img src="Registro2.png" style="width:100%; height:100%; border-radius:8px;">
+            </div>
+            <div>
+                <h4>Registro: 8 de Junio de 2022</h4>
+                <div class="content" data-text="Pasamos la noche encerrados en una cafetería abandonada. Las carreteras están bloqueadas y la señal es casi nula. Algunas personas presentan lesiones graves pero actúan como si no les doliera. Escuchamos gritos a lo lejos, pero no podemos arriesgarnos a salir. El camarógrafo sigue empeorando."></div>
+            </div>
+        </div>
+
+        <!-- REGISTRO 3 -->
+        <div class="doc">
+            <div class="doc-image">
+                <img src="Registro3.png" style="width:100%; height:100%; border-radius:8px;">
+            </div>
+            <div>
+                <h4>Registro: 9 de Junio de 2022</h4>
+                <div class="content" data-text="Encontramos a un doctor escondido en un almacén del hospital. Nos habló del agua: dijo que no fue un accidente. Mencionó documentos clasificados y un proyecto cancelado por el gobierno. Antes de que pudiera decir más, alguien golpeó la puerta. Escapamos por una escalera de emergencia."></div>
+            </div>
+        </div>
+
+        <!-- REGISTRO 4 -->
+        <div class="doc">
+            <div class="doc-image">
+                <img src="Registro4.png" style="width:100%; height:100%; border-radius:8px;">
+            </div>
+            <div>
+                <h4>Registro: 10 de Junio de 2022</h4>
+                <div class="content" data-text="Entramos al hospital de la montaña. El olor es insoportable y los pasillos están abandonados, pero aquí debe estar la evidencia del brote. Encontramos frascos rotos, muestras biológicas y restos de equipo médico. Dejar al camarógrafo en la camioneta fue una decisión difícil, pero no había otra opción. Necesitamos respuestas."></div>
+            </div>
+        </div>
+
+    </section>
+    <footer>
+        © 2025 Outbreak Report Dev Team — Monterrey, México · v0.9
+    </footer>
+</body>
+
+<script>
+/* ==========================================================
+   SOLO FUNCIONALIDAD COMPATIBLE CON TODAS LAS PÁGINAS
+   (Typewriter + Reveal para los .content)
+   ========================================================== */
+
+/* -----------------------
+   Typewriter reveal
+   ----------------------- */
+function typeReveal(el, speed = 16) {
+    if (!el || el.dataset.revealed) return;
+
+    el.dataset.revealed = "1";
+
+    const text = el.getAttribute("data-text") || "";
+    el.style.opacity = 1;
+    el.style.whiteSpace = "pre-wrap";
+    el.innerText = "";
+
+    let i = 0;
+    const t = setInterval(() => {
+        el.innerText += text[i] || "";
+        i++;
+
+        if (i >= text.length) {
+            clearInterval(t);
+            el.classList.add("revealed");
+        }
+    }, speed);
+}
+
+/* -----------------------
+   Detectar elementos al hacer scroll
+   ----------------------- */
+function onScrollReveal() {
+    const els = document.querySelectorAll(".doc .content");
+    const vh = innerHeight;
+
+    els.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.top < vh - 80) {
+            typeReveal(el, 14);
+        }
+    });
+}
+
+addEventListener("scroll", onScrollReveal);
+addEventListener("load", onScrollReveal);
+
+/* ==========================================================
+   PROTECCIONES PARA QUE NO SE ROMPA EN OTRAS PÁGINAS
+   ========================================================== */
+
+function exists(id) {
+    return document.getElementById(id);
+}
+
+/* Partículas (solo si existe el canvas) */
+if (exists("particles")) {
+    /* Pega aquí tu código completo de partículas SIN CAMBIAR NADA */
+}
+
+/* Hero parallax / rotación (solo si existen los elementos) */
+if (exists("heroLeft") && exists("heroImg")) {
+    /* Pega aquí esa parte de tu hero tal cual está en tu index */
+}
+
+/* Audio (solo si existe el botón toggleSound) */
+if (exists("toggleSound")) {
+    /* Pega aquí el código del audio tal cual */
+}
+
+/* Trailer modal (solo si existe el botón watchTrailer) */
+if (exists("watchTrailer")) {
+    /* Pega todo lo del modal aquí sin cambios */
+}
+
+/* Accesibilidad “D” — nunca causa errores */
+document.addEventListener("keydown", (e) => {
+    if (e.key === "d") {
+        document.querySelectorAll(".doc .content").forEach(el => {
+            if (!el.dataset.revealed) {
+                el.innerText = el.getAttribute("data-text");
+                el.classList.add("revealed");
+                el.dataset.revealed = "1";
+            }
+        });
+    }
+});
+</script>
+</html>

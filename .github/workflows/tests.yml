@@ -1,0 +1,29 @@
+name: Lint HTML and CSS
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install linters
+        run: |
+          npm install -g htmlhint stylelint postcss postcss-html
+
+      - name: Run HTMLHint
+        run: htmlhint "PaginaWeb/**/*.html"
+
+      - name: Run Stylelint
+        run: stylelint "PaginaWeb/**/*.css" --custom-syntax postcss-html
